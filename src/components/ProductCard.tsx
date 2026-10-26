@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import type { Product } from "../data/types";
 import { formatUSD } from "../data/utils";
+import Empty from "./Empty";
 
 export default function ProductCard({
   product_id,
@@ -12,7 +13,7 @@ export default function ProductCard({
 }: Partial<Product>) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  if (images === undefined || !images.length) return <p>No images available</p>;
+  if (images === undefined || !images.length) return <Empty />;
 
   const prevImage = () => {
     setCurrentIndex((prevIndex) =>
@@ -28,12 +29,12 @@ export default function ProductCard({
 
   return (
     <div id={`${product_id}`} className="flex flex-col product-card">
-      <div className="product-gallery relative w-full max-w-60.25 my-0 mx-auto overflow-hidden">
+      <div className="product-gallery relative w-full max-w-60.25 overflow-hidden">
         <div className="slider-container flex overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-none">
           <img
             src={images[currentIndex].image_url}
             alt={name}
-            className="w-full aspect-square object-cover rounded"
+            className="w-full aspect-square object-cover rounded block"
             loading="lazy"
           />
 
