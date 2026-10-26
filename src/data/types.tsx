@@ -1,8 +1,22 @@
 export type Product = {
   category: { category_id: number; name: string; created_at: string };
-  product_id: number;
-  name: string;
+  collection: {
+    collection_id: string;
+    name: string;
+    description: string;
+    image_url: string;
+    created_at: string;
+  };
   colors: string[];
-  priceRange: { lowest: number; highest: number };
-  images: { image_id: number; image_url: string }[];
+  created_at: string;
+  description: string;
+  images: [{ color: string; image_url: string }];
+  inventory: [];
+  name: string;
+  priceRange: { highest: number; lowest: number };
+  product_id: string;
+  rating: number;
+  reviews: number;
+  sizes: string[];
+  sold: number;
 };

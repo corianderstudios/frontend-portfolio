@@ -10,16 +10,19 @@ export default function ProductContainer() {
     queryKey: ["products"],
     queryFn: ({ signal }) => fetchProductData(signal),
   });
+
   const products: Product[] = data?.data ?? [];
-  console.log(products);
 
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error: {error.message}</p>;
 
   return (
-    <div className="grid grid-cols-4 gap-4 p-4">
-      {products.length > 0 &&
-        products.map((p) => <ProductCard key={p.product_id} {...p} />)}
-    </div>
+    <section>
+      <h3>Products</h3>
+      <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 p-4">
+        {products.length > 0 &&
+          products.map((p) => <ProductCard key={p.product_id} {...p} />)}
+      </div>
+    </section>
   );
 }

@@ -1,4 +1,8 @@
+import { useState } from "react";
+
 import type { Product } from "../data/types";
+import { formatUSD } from "../data/utils";
+import Empty from "./Empty";
 
 export default function ProductCard({
   product_id,
@@ -6,17 +10,65 @@ export default function ProductCard({
   colors,
   priceRange,
   images,
-}: Product) {
+}: Partial<Product>) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  if (images === undefined || !images.length) return <Empty />;
+
+  const prevImage = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1,
+    );
+  };
+
+  const nextImage = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === images.length - 1 ? 0 : prevIndex + 1,
+    );
+  };
+
   return (
-    <div id={`${product_id}`}>
-      <img src={images[0].image_url} width="250" height="400" />
+    <div id={`${product_id}`} className="flex flex-col product-card">
+      <div className="product-gallery relative w-full max-w-60.25 overflow-hidden">
+        <div className="slider-container flex overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-none">
+          <img
+            src={images[currentIndex].image_url}
+            alt={name}
+            className="w-full aspect-square object-cover rounded block"
+            loading="lazy"
+          />
+
+          {images.length > 1 && (
+            <>
+              <button
+                className="absolute w-8 top-1/2 left-0 cursor-pointer flex items-center justify-center translate-y-[-50%] hover:bg-gray-400/50 h-full"
+                aria-label="Previous image"
+                onClick={prevImage}
+              >
+                &#10094;
+              </button>
+              <button
+                className="absolute w-8 top-1/2 right-0 cursor-pointer flex items-center justify-center translate-y-[-50%] hover:bg-gray-400/50 h-full"
+                aria-label="Next image"
+                onClick={nextImage}
+              >
+                &#10095;
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
       <div>
-        <span>{colors[0]}</span>
-        <p>{name}</p>
-        <p>{formatUSD.format(priceRange.highest)}</p>
-        <div className="flex justfy-between">
-          {colors.map((color) => (
+        <span className="text-xs capitalize mb-2">{colors?.[0]}</span>
+        <p className="mb-2">{name}</p>
+        <p className="text-neutral-500 mb-2">
+          {formatUSD.format(priceRange?.highest ?? 0)}
+        </p>
+        <div className="flex gap-2">
+          {colors?.map((color) => (
             <div
+              key={`${product_id}-${color}`}
               className="rounded-full h-2.5 w-2.5 border"
               style={{ backgroundColor: color }}
             ></div>
@@ -26,8 +78,3 @@ export default function ProductCard({
     </div>
   );
 }
-
-const formatUSD = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
