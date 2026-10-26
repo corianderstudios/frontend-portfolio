@@ -17,9 +17,12 @@ export default function ProductContainer() {
   if (isError) return <p>Error: {error.message}</p>;
 
   return (
-    <div className="grid grid-cols-4 gap-4 p-4">
-      {products.length > 0 &&
-        products.map((p) => <ProductCard key={p.product_id} {...p} />)}
-    </div>
+    <section>
+      <h3>Products</h3>
+      <div className="grid grid-cols-4 gap-4 p-4">
+        {products.length > 0 &&
+          products.map((p) => <ProductCard key={crypto.randomUUID()} {...p} />)}
+      </div>
+    </section>
   );
 }
