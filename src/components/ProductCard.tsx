@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import type { Product } from "../data/types";
+import { formatUSD } from "../data/utils";
 
 export default function ProductCard({
   product_id,
@@ -30,7 +31,7 @@ export default function ProductCard({
       <div className="product-gallery relative w-full max-w-60.25 my-0 mx-auto overflow-hidden">
         <div className="slider-container flex overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-none">
           <img
-            src={images?.[currentIndex]?.image_url}
+            src={images[currentIndex].image_url}
             alt={name}
             className="w-full aspect-square object-cover rounded"
             loading="lazy"
@@ -76,8 +77,3 @@ export default function ProductCard({
     </div>
   );
 }
-
-const formatUSD = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});

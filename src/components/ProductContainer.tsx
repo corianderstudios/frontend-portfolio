@@ -21,7 +21,7 @@ export default function ProductContainer() {
       <h3>Products</h3>
       <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 p-4">
         {products.length > 0 &&
-          products.map((p) => <ProductCard key={crypto.randomUUID()} {...p} />)}
+          products.map((p) => <ProductCard key={p.product_id} {...p} />)}
       </div>
     </section>
   );

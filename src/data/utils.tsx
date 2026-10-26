@@ -10,3 +10,8 @@ export async function fetchProductData(
   if (!res.ok) throw new Error(`Request failed: ${res.status}`);
   return res.json();
 }
+
+export const formatUSD = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
