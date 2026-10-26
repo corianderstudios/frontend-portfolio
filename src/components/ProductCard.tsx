@@ -6,25 +6,22 @@ export default function ProductCard({
   colors,
   priceRange,
   images,
-}: Product) {
+}: Partial<Product>) {
   return (
     <div id={`${product_id}`} className="flex flex-col">
-      <div
-        className="w-full h-50 rounded"
-        style={{
-          backgroundImage: `url(${images[0].image_url})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      ></div>
+      <img
+        src={images?.[0]?.image_url}
+        alt={name}
+        className="w-full aspect-square object-cover rounded"
+      />
       <div>
-        <span className="text-xs capitalize mb-2">{colors[0]}</span>
+        <span className="text-xs capitalize mb-2">{colors?.[0]}</span>
         <p className="mb-2">{name}</p>
         <p className="text-neutral-500 mb-2">
-          {formatUSD.format(priceRange.highest)}
+          {formatUSD.format(priceRange?.highest ?? 0)}
         </p>
         <div className="flex gap-2">
-          {colors.map((color) => (
+          {colors?.map((color) => (
             <div
               className="rounded-full h-2.5 w-2.5 border"
               style={{ backgroundColor: color }}
