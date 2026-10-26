@@ -10,7 +10,7 @@ export type Product = {
   colors: string[];
   created_at: string;
   description: string;
-  images: [{ color: string; image_url: string }];
+  images: { color: string; image_url: string }[];
   inventory: [];
   name: string;
   priceRange: { highest: number; lowest: number };
