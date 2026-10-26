@@ -11,7 +11,7 @@ export default function ProductContainer() {
     queryFn: ({ signal }) => fetchProductData(signal),
   });
   const products: Product[] = data?.data ?? [];
-  console.log(products);
+  console.log(data);
 
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error: {error.message}</p>;
