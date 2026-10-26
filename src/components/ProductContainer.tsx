@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 
 import ProductCard from "./ProductCard";
 import type { Product } from "../data/types";
-// @ts-expect-error The JavaScript utility module has no TypeScript declaration.
 import { fetchProductData } from "../data/utils";
 
 export default function ProductContainer() {

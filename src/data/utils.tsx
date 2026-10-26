@@ -5,7 +5,7 @@ export const API_ENDPOINT =
 
 export async function fetchProductData(
   signal: AbortSignal,
-): Promise<Product[]> {
+): Promise<{ data: Product[] }> {
   const res = await fetch(API_ENDPOINT, { signal });
   if (!res.ok) throw new Error(`Request failed: ${res.status}`);
   return res.json();
