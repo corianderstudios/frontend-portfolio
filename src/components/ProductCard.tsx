@@ -40,14 +40,14 @@ export default function ProductCard({
           {images.length > 1 && (
             <>
               <button
-                className="absolute w-40 top-1/2 left-[-25%] cursor-pointer flex items-center justify-center translate-y-[-50%]"
+                className="absolute w-8 top-1/2 left-0 cursor-pointer flex items-center justify-center translate-y-[-50%] hover:bg-gray-400/50 h-full"
                 aria-label="Previous image"
                 onClick={prevImage}
               >
                 &#10094;
               </button>
               <button
-                className="absolute w-40 top-1/2 right-[-25%] cursor-pointer flex items-center justify-center translate-y-[-50%]"
+                className="absolute w-8 top-1/2 right-0 cursor-pointer flex items-center justify-center translate-y-[-50%] hover:bg-gray-400/50 h-full"
                 aria-label="Next image"
                 onClick={nextImage}
               >
