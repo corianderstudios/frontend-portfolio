@@ -1,4 +1,4 @@
-export type Product = {
+type Product = {
   category: { category_id: number; name: string; created_at: string };
   collection: {
     collection_id: string;
@@ -19,4 +19,16 @@ export type Product = {
   reviews: number;
   sizes: string[];
   sold: number;
+};
+
+type Pagination = {
+  hasMore: boolean;
+  page: number;
+  per_page: number;
+  total: number;
+};
+
+export type ProductResponse = {
+  data: Product[];
+  pagination: Pagination;
 };
