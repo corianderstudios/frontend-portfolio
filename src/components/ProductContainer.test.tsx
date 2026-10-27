@@ -1,8 +1,10 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 import ProductContainer from "./ProductContainer";
+import type { Product, ProductResponse } from "../data/types";
 import { API_ENDPOINT } from "../data/utils";
 import { makeProduct } from "../test/productFixture";
 
@@ -14,9 +16,23 @@ function response(body: unknown, ok = true, status = 200): Response {
   } as Response;
 }
 
+function productResponse(
+  products: Product[],
+  page: number,
+  hasMore: boolean,
+  total: number,
+): ProductResponse {
+  return {
+    data: products,
+    pagination: { hasMore, page, per_page: 2, total },
+  };
+}
+
 function renderProductContainer() {
   const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false, gcTime: 0 } },
+    defaultOptions: {
+      queries: { retry: false, gcTime: 60_000, staleTime: 60_000 },
+    },
   });
 
   return {
@@ -42,14 +58,16 @@ describe("ProductContainer query", () => {
     const product = makeProduct();
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
-      .mockResolvedValue(response({ data: [product] }));
+      .mockResolvedValue(
+        response(productResponse([product], 1, false, 1)),
+      );
 
     renderProductContainer();
 
     expect(await screen.findByText("Runner")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Products" })).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith(
-      API_ENDPOINT,
+      `${API_ENDPOINT}?page=1`,
       expect.objectContaining({ signal: expect.anything() }),
     );
   });
@@ -66,12 +84,17 @@ describe("ProductContainer query", () => {
 
   it("renders each product returned by the query", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      response({
-        data: [
+      response(
+        productResponse(
+          [
           makeProduct(),
           makeProduct({ product_id: "product-2", name: "Trail shoe" }),
-        ],
-      }),
+          ],
+          1,
+          false,
+          2,
+        ),
+      ),
     );
 
     renderProductContainer();
@@ -80,5 +103,63 @@ describe("ProductContainer query", () => {
       expect(screen.getByText("Runner")).toBeInTheDocument();
       expect(screen.getByText("Trail shoe")).toBeInTheDocument();
     });
+  });
+
+  it("prefetches the next page and navigates between pages", async () => {
+    const user = userEvent.setup();
+    const pageOne = makeProduct();
+    const pageTwo = makeProduct({
+      product_id: "product-2",
+      name: "Trail shoe",
+    });
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockImplementation(async (input) => {
+        const page = Number(new URL(String(input)).searchParams.get("page"));
+        return response(
+          page === 1
+            ? productResponse([pageOne], 1, true, 3)
+            : productResponse([pageTwo], page, false, 3),
+        );
+      });
+
+    renderProductContainer();
+
+    expect(await screen.findByText("Runner")).toBeInTheDocument();
+    expect(screen.getByText("1 of 2")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        `${API_ENDPOINT}?page=2`,
+        expect.objectContaining({ signal: expect.anything() }),
+      );
+    });
+
+    await user.click(screen.getByRole("button", { name: "Next ❯" }));
+    expect(await screen.findByText("Trail shoe")).toBeInTheDocument();
+    expect(screen.getByText("2 of 2")).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+
+    await user.click(screen.getByRole("button", { name: "❮ Back" }));
+    expect(await screen.findByText("Runner")).toBeInTheDocument();
+    expect(screen.getByText("1 of 2")).toBeInTheDocument();
+  });
+
+  it("does not prefetch another page when there are no more results", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(
+        response(
+          productResponse([makeProduct()], 1, false, 1),
+        ),
+      );
+
+    renderProductContainer();
+
+    expect(await screen.findByText("1 of 1")).toBeInTheDocument();
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    expect(fetchMock).not.toHaveBeenCalledWith(
+      `${API_ENDPOINT}?page=2`,
+      expect.anything(),
+    );
   });
 });
