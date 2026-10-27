@@ -13,7 +13,19 @@ describe("fetchProductData", () => {
     } as Response);
 
     await expect(fetchProductData(signal)).resolves.toEqual(payload);
-    expect(fetch).toHaveBeenCalledWith(API_ENDPOINT, { signal });
+    expect(fetch).toHaveBeenCalledWith(`${API_ENDPOINT}?page=1`, { signal });
+  });
+
+  it("includes the requested page in the URL", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      json: async () => ({ data: [], pagination: {} }),
+    } as Response);
+    const signal = new AbortController().signal;
+
+    await fetchProductData(signal, 3);
+
+    expect(fetch).toHaveBeenCalledWith(`${API_ENDPOINT}?page=3`, { signal });
   });
 
   it("throws when the product request is unsuccessful", async () => {

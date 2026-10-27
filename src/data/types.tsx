@@ -20,3 +20,15 @@ export type Product = {
   sizes: string[];
   sold: number;
 };
+
+type Pagination = {
+  hasMore: boolean;
+  page: number;
+  per_page: number;
+  total: number;
+};
+
+export type ProductResponse = {
+  data: Product[];
+  pagination: Pagination;
+};
