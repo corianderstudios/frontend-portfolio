@@ -29,8 +29,10 @@ export default function ProductContainer() {
   }, [data, page, queryClient]);
 
   const products: ProductResponse["data"] = data?.data ?? [];
+  const totalPages =
+    data?.pagination &&
+    Math.ceil(data?.pagination?.total / data?.pagination?.per_page);
 
-  console.log("data", data);
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error: {error.message}</p>;
 
@@ -40,6 +42,21 @@ export default function ProductContainer() {
       <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 p-4">
         {products.length > 0 &&
           products.map((p) => <ProductCard key={p.product_id} {...p} />)}
+      </div>
+      <div className="flex justify-center gap-4 p-4">
+        <button
+          className="cursor-pointer"
+          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+        >
+          &#10094; Back
+        </button>
+        {`${page} of ${totalPages}`}
+        <button
+          className="cursor-pointer"
+          onClick={() => setPage((prev) => prev + 1)}
+        >
+          Next &#10095;
+        </button>
       </div>
     </section>
   );

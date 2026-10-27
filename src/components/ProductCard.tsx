@@ -66,7 +66,7 @@ export default function ProductCard({
           {formatUSD.format(priceRange?.highest ?? 0)}
         </p>
         <div className="flex gap-2">
-          {colors?.map((color) => (
+          {colors?.map((color: string) => (
             <div
               key={`${product_id}-${color}`}
               className="rounded-full h-2.5 w-2.5 border"
