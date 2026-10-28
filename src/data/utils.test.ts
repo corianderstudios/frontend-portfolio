@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { API_ENDPOINT, fetchProductData } from "./utils";
+import { API_ENDPOINT, fetchProductById, fetchProductData } from "./utils";
 import { makeProduct } from "../test/productFixture";
 
 describe("fetchProductData", () => {
@@ -14,6 +14,36 @@ describe("fetchProductData", () => {
 
     await expect(fetchProductData(signal)).resolves.toEqual(payload);
     expect(fetch).toHaveBeenCalledWith(`${API_ENDPOINT}?page=1`, { signal });
+  });
+
+  describe("fetchProductById", () => {
+    it("requests and returns a product by ID", async () => {
+      const product = makeProduct();
+      const signal = new AbortController().signal;
+      vi.spyOn(globalThis, "fetch").mockResolvedValue({
+        ok: true,
+        json: async () => product,
+      } as Response);
+
+      await expect(fetchProductById(signal, product.product_id)).resolves.toEqual(
+        product,
+      );
+      expect(fetch).toHaveBeenCalledWith(
+        `${API_ENDPOINT}/${product.product_id}`,
+        { signal },
+      );
+    });
+
+    it("throws when the product request is unsuccessful", async () => {
+      vi.spyOn(globalThis, "fetch").mockResolvedValue({
+        ok: false,
+        status: 404,
+      } as Response);
+
+      await expect(
+        fetchProductById(new AbortController().signal, "missing-product"),
+      ).rejects.toThrow("Request failed: 404");
+    });
   });
 
   it("includes the requested page in the URL", async () => {
