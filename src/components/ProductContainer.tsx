@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router";
 import {
   keepPreviousData,
   useQuery,
@@ -28,9 +29,9 @@ export default function ProductContainer() {
     }
   }, [data, page, queryClient]);
 
+  if (isLoading) return <p>Loading...</p>;
   if (isError || !data)
     return <p>Error: {error?.message ?? "An error occurred"}</p>;
-  if (isLoading) return <p>Loading...</p>;
 
   const products: ProductResponse["data"] = data.data;
   const totalPages = Math.ceil(
@@ -42,7 +43,9 @@ export default function ProductContainer() {
       <h3>Products</h3>
       <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 p-4">
         {products.map((p) => (
-          <ProductCard key={p.product_id} {...p} />
+          <Link key={p.product_id} to={`/products/${p.product_id}`}>
+            <ProductCard {...p} />
+          </Link>
         ))}
       </div>
       <div className="flex justify-center gap-4 p-4">
