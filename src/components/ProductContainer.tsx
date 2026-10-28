@@ -21,27 +21,29 @@ export default function ProductContainer() {
 
   useEffect(() => {
     if (data?.pagination.hasMore) {
-      queryClient.prefetchQuery({
+      queryClient.query({
         queryKey: ["products", page + 1],
         queryFn: ({ signal }) => fetchProductData(signal, page + 1),
       });
     }
   }, [data, page, queryClient]);
 
-  const products: ProductResponse["data"] = data?.data ?? [];
-  const totalPages =
-    data?.pagination &&
-    Math.ceil(data?.pagination?.total / data?.pagination?.per_page);
-
+  if (isError || !data)
+    return <p>Error: {error?.message ?? "An error occurred"}</p>;
   if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Error: {error.message}</p>;
+
+  const products: ProductResponse["data"] = data.data;
+  const totalPages = Math.ceil(
+    data.pagination.total / data.pagination.per_page,
+  );
 
   return (
     <section>
       <h3>Products</h3>
       <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 p-4">
-        {products.length > 0 &&
-          products.map((p) => <ProductCard key={p.product_id} {...p} />)}
+        {products.map((p) => (
+          <ProductCard key={p.product_id} {...p} />
+        ))}
       </div>
       <div className="flex justify-center gap-4 p-4">
         <button
@@ -54,6 +56,7 @@ export default function ProductContainer() {
         <button
           className="cursor-pointer"
           onClick={() => setPage((prev) => prev + 1)}
+          disabled={page >= totalPages}
         >
           Next &#10095;
         </button>
