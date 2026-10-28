@@ -10,14 +10,14 @@ export default function ProductDetails(props: Product) {
   return (
     <section className="product-details p-8">
       <Link to="/" className="mb-6 inline-flex items-center gap-1 text-sm">
-        <IoIosArrowRoundBack />
+        <IoIosArrowRoundBack size={20} />
         Back
       </Link>
-      <div className="grid grid-cols-3 gap-2">
-        <div className="image-container col-span-2 flex">
+      <div className="grid grid-cols-12 gap-3">
+        <div className="image-container col-span-7 flex">
           <div className="image-carsousel">
             {props.images && props.images.length > 1 ? (
-              <div className="image-thumbnails flex flex-col gap-2 mt-2">
+              <div className="image-thumbnails flex flex-col gap-2 mr-2">
                 {props.images.map((img, index) => (
                   <img
                     key={index}
@@ -30,17 +30,17 @@ export default function ProductDetails(props: Product) {
               </div>
             ) : null}
           </div>
-          <div className="main-image flex justify-start">
+          <div className="main-image min-w-0 flex-1 justify-start">
             {props.images && props.images.length > 0 ? (
               <img
                 src={props.images[currentIndex].image_url}
                 alt={props.name}
-                className="w-full aspect-video object-contain"
+                className="w-full max-h-full object-cover aspect-square rounded"
               />
             ) : null}
           </div>
         </div>
-        <div className="product-info col-span-1">
+        <div className="product-info col-span-5">
           <h2 className="text-2xl font-bold mb-2">{props.name}</h2>
           <p className="text-gray-600 mb-2">{props.description}</p>
           <p className="text-lg font-semibold mb-2">
